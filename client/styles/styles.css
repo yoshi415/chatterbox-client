@@ -84,5 +84,17 @@ form input[type=text] {
 }
 
 .textbox {
-    color: red;
+    color: black;
+}
+
+.navbar {
+    background-color: #3D9970;
+}
+
+.navbar-brand {
+    color: white;
+}
+
+.friends {
+    font-weight: bold;
 }

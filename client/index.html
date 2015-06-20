@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>chatterbox</title>
     <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
 
     <!-- dependencies -->
     <script src="bower_components/jquery/jquery.min.js"></script>
@@ -13,12 +14,21 @@
     <script src="scripts/app.js"></script>
   </head>
   <body>
+    <nav class="navbar navbar-pills">
+      <h1 class="navbar-brand">chatterbox</h1>
+      <select>
+        <option value="lobby">Lobby</option>
+        <option value="lobby">test</option>
+      </select>      
+<!--       <p class="navbar-btn">
+          <a href="#" class="btn btn-success" id="addRoom">Add Room</a>
+      </p> -->
+    </nav>
     <div id="main">
-      <h1>chatterbox</h1>
         <form>
           Message:
           <input type="text" name="message" id='chatMessage'>
-          <input type="button" value="Send Message" id="send">
+          <input type="button" class="btn-primary" value="Send Message" id="send">
         </form>
         <div id="chats">
         </div>
