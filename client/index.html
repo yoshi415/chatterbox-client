@@ -15,16 +15,26 @@
   </head>
   <body>
     <nav class="navbar navbar-pills">
-      <h1 class="navbar-brand">chatterbox</h1>
-      <select>
-        <option value="lobby">Lobby</option>
-        <option value="lobby">test</option>
-      </select>      
-<!--       <p class="navbar-btn">
-          <a href="#" class="btn btn-success" id="addRoom">Add Room</a>
-      </p> -->
+      <h1 class="navbar-brand">chatterbox</h1>     
+      <p class="navbar-btn">
+          <button class="btn-primary" id="newRoom">Add Room</button>
+          <form>
+            <input type="text" name="room" id='roomText'>
+          </form>
+      </p>
+      <div>
+        <select id="roomSelect">
+        </select> 
+      </div>
     </nav>
-    <div id="main">
+    <container class="container">
+      <div class="row">
+        <div class="col-md-2">
+          <p><strong>Friends list</strong></p>
+          <ul class="list-group list-unstyled" id="friendsList">
+          </ul>
+        </div>
+      <div id="main" class="col-md-6">
         <form>
           Message:
           <input type="text" name="message" id='chatMessage'>
@@ -32,9 +42,9 @@
         </form>
         <div id="chats">
         </div>
-        <div id="roomSelect">
-        </div>
-    </div>
+      </div>
+      </div>
+    </container>
     <script>
       $(document).ready(function() {
         app.init();

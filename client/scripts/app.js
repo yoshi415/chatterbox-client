@@ -1,13 +1,9 @@
 var app = {
 
-  // message: {
-  //   "username": username,
-  //   "text": text,
-  //   roomname: roomname
-  // },
   server: 'https://api.parse.com/1/classes/chatterbox',
   
   message: {}, 
+  rooms: {},
 
   init: function() {
     // retrieves data object filled of messages
@@ -16,20 +12,23 @@ var app = {
     var myUsername = location.search.split('username=')[1];
     // creates message object and send to handle submit method
     var room;
-    $('#send').on('click', function() { app.message.text =  $("#chatMessage").val()
+    $('#newRoom').on('click', function() { app.addRoom($("#roomText").val()) } );
+    $('#send').on('click', function() { app.message.text =  $("#chatMessage").val();
                                         app.message.username = myUsername;
                                           if (room) {
                                             app.message.roomname = room;
                                           } else {
                                             // defaults to lobby if no room name given
-                                            app.message.roomname = 'lobby'
+                                            app.message.roomname = 'lobby';
                                           }
                                         app.handleSubmit(app.message);
-                                        })
+                                        });
     // add username to friends list
-    $('#user').on('click', function() { app.addFriend($("#user").val() ) } );
-    // add room name to #roomSelect div
-    $('#addRoom').on('click', function() { app.addRoom(roomName) })
+    $('body').delegate('#user', 'click', function() { app.addFriend($(this).text() )});
+
+    $('#roomSelect').change(function() { app.clearMessages();
+                                         // display messages with specific roomname
+                                       })
   },
 
   send: function(message) {
@@ -57,12 +56,9 @@ var app = {
       data: JSON.stringify(message),
       contentType: 'application/json',
       success: function (data) {
-        // console.log('chatterbox: Message sent');
         console.log(data)
-
-        app.container = data;
-        for (var key in app.container.results) {
-          app.addMessage(app.container.results[key], false)
+        for (var key in data.results) {
+          app.addMessage(data.results[key], false)
         }
       },
       error: function (data) {
@@ -79,31 +75,50 @@ var app = {
   addMessage: function(message, topOrBottom) {
     var textMessage = message.text;
     var userNameText = message.username;
+    // slice time out of parse object and format to PST
+    if (!message.createdAt) {
+      message.createdAt = String(new Date());
+    }
+    var hours = message.createdAt.slice(11, 13) - 7;
+    var ampm = "AM";
+    if (hours > 11) {
+      hours -= 12;
+      ampm = "PM"
+    }
+    var minutes = message.createdAt.slice(14, 16);
+    var time = hours + ":" + minutes + " " + ampm;
+    
+    // test for falsy values
     if (textMessage && userNameText) {
+      // only allow letters or numbers in text or username
       if (textMessage.charAt(0).match(/^[0-9a-zA-Z]{1,16}$/)) {
         if (userNameText.charAt(0).match(/^[0-9a-zA-Z]{1,16}$/)) {
-          // if (userNameText === '')
-          //   $('#chats').topOrBottom("<div class='textbox'><a href=# id='user'>" + message.username + "</a>: " + message.text + "</div>");
-
-          //$('#chats').topOrBottom("<div class='textbox'><a href=# id='user'>" + message.username + "</a>: " + message.text + "</div>");
-
+          // false if called from fetch
+          // true if called from addMessage directly
           if (topOrBottom) {
-            $('#chats').prepend("<div class='textbox'><a href=# id='user'>" + userNameText + "</a>: " + message.text + "</div>");
+            $('#chats').prepend("<div class='textbox " + userNameText + "'><a href='#' id='user'>" + userNameText + "</a>: " + message.text + "</br> sent at: " + time + "</div>");
           } else {
-            $('#chats').append("<div class='textbox'><a href=# id='user'>" + userNameText + "</a>: " + message.text + "</div>");
-          }     
+            $('#chats').append("<div class='textbox " + userNameText + "'><a href='#' id='user'>" + userNameText + "</a>: " + message.text +  "</br> sent at: " + time + "</div>");
+          }
+          app.rooms[message.roomname] = message.roomname;
+          
+          $('#roomSelect').html('');
+          for (var key in app.rooms) {
+            $('#roomSelect').append("<option value=" + app.rooms[key] + ">" + app.rooms[key] + "</option>")                 
+          }
         }
       }
     }
   },
 
   addRoom: function(roomName) {
-    $('#roomSelect').append("<div>" + roomName + "</div>")
+    $('#roomSelect').append("<option value=" + roomName + ">" + roomName + "</option>")
   },
 
   addFriend: function(username) {
-    console.log(username)
-    console.log("test")
+    // add username to friends list
+    $("." + username).addClass("friends");
+    $('#friendsList').append("<li>" + username + "</li>")
   },
 
   handleSubmit: function(message) {
